@@ -29,7 +29,7 @@
                                 <?php
                                     if ($_SESSION['user_id'] == 1) {
                                 ?>
-                                <li class="nav-item"><a class="nav-link" href="admin/index.php">Admin Panel</a></li>
+                                <li class="nav-item"><a class="nav-link" href="admin/dashboard.php">Admin Panel</a></li>
                                 <?php
                                     }
                                 ?>

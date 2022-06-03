@@ -30,7 +30,7 @@
               $_SESSION['user_id'] = $user['id'];
               $_SESSION['logged_in'] = time();
               if ($user['role'] === 1) {
-                  header('Location: admin/index.php');
+                  header('Location: admin/dashboard.php');
               } else {
                   header('Location: index.php');
               }

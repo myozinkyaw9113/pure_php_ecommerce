@@ -1,3 +1,18 @@
+<?php
+  if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in'])) {
+    # Select this user with SESSION['user_id']
+    $pdo_this_user = $pdo->prepare("SELECT * FROM users WHERE id=".$_SESSION['user_id']); 
+    $pdo_this_user->execute();
+    $loginUser = $pdo_this_user->fetch(PDO::FETCH_ASSOC);
+  }
+?>
+
+<style>
+  .active {
+    background-color: #FF7700;
+  }
+</style>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,10 +90,26 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="dashboard.php" class="nav-link <?php if ($link == 'dashboard.php') { echo 'active'; } ?>">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Dashboard
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="products.php" class="nav-link <?php if ($link == 'products.php') { echo 'active'; } ?>">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Products
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="category.php" class="nav-link <?php if ($link == 'category.php') { echo 'active'; } ?>">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Category
               </p>
             </a>
           </li>

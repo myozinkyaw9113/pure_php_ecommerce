@@ -1,7 +1,8 @@
 <?php
   session_start();
   require '../config/database.php';
-  require 'loginUser.php'; # Login User
+  require '../config/common.php';
+  require 'loginUser.php';
 
   # Pagination 
   # p = $pageno;
@@ -43,6 +44,12 @@
 require 'top.php';
 ?>
 
+<style>
+  table tbody tr.table-data td {
+    vertical-align: middle;
+  }
+</style>
+
   <!-- Content Header (Page header) -->
   <div class="content-header">
   </div>
@@ -56,16 +63,19 @@ require 'top.php';
           <div class="card">
             <div class="d-flex justify-content-between gap-2 align-items-center p-3" style="border-bottom:1px solid #ddd;">
               <h3 class="card-title">Prooduct Table</h3>
-              <a href="product/create.php" class="bg-success rounded"><i class='bx bx-list-plus p-2'></i></a>
+              <a href="products/create.php" class="bg-success rounded"><i class='bx bx-list-plus p-2'></i></a>
             </div>
             
             <div class="card-body">
-              <table class="table table-bordered">
+              <table class="table table-bordered align-items-center">
                 <thead>
                   <tr>
                     <th style="width: 10px">#</th>
-                    <th>Content</th>
-                    <th>CreatedBy</th>
+                    <th>Name</th>
+                    <th>Image</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Category</th>
                     <th style="width: 40px">Action</th>
                   </tr>
                 </thead>
@@ -75,14 +85,17 @@ require 'top.php';
                     $num = 1;
                     for ($i=0; $i < count($result); $i++) { 
                   ?>
-                  <tr>
+                  <tr class="table-data">
                     <td><?php echo $num++; ?></td>
-                    <td><?php echo substr($result[$i]['content'], 0, 70). '...'; ?></td>
-                    <td><?php echo $result[$i]['author_id'] ;?></td>
+                    <td><?php echo escape($result[$i]['name']); ?></td>
+                    <td><img style="width: 70px;height:auto;" src="products/images/<?php echo escape($result[$i]['img']) ;?>" alt="<?php echo escape($result[$i]['name']); ?>"></td>
+                    <td><?php echo escape($result[$i]['price']) ;?></td>
+                    <td><?php echo escape($result[$i]['quantity']) ;?></td>
+                    <td><?php echo escape($result[$i]['category_id']) ;?></td>
                     <td>
                       <div class="d-flex gap-1">
-                        <a href="#" class="btn-sm btn-warning"><i class='bx bx-message-alt-detail'></i></a>
-                        <a href="#" class="btn-sm btn-danger"><i class='bx bx-block'></i></a>
+                        <a href="products/edit.php?id=<?php echo escape($result[$i]['id']); ?>" class="btn-sm btn-warning"><i class='bx bx-message-alt-detail'></i></a>
+                        <a href="products/delete.php?id=<?php echo escape($result[$i]['id']); ?>" class="btn-sm btn-danger"><i class='bx bx-trash'></i></a>
                       </div>
                     </td>
                   </tr>
