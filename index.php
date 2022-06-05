@@ -9,6 +9,12 @@
         $pdo_this_user->execute();
         $loginUser = $pdo_this_user->fetch(PDO::FETCH_ASSOC);
     }
+
+    # Show Lastest 8 items 
+    $pdo_latest_items = $pdo->prepare("SELECT * FROM products LIMIT 0,9"); 
+    $pdo_latest_items->execute();
+    $latestItems = $pdo_latest_items->fetchAll();
+
 ?>
 
 <?php 
@@ -117,122 +123,129 @@ dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
 
 <section class="owl-carousel active-product-area section_gap">
 
-<div class="single-product-slider">
-<div class="container">
-<div class="row justify-content-center">
-<div class="col-lg-6 text-center">
-<div class="section-title">
-<h1>Latest Products</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-dolore
-magna aliqua.</p>
-</div>
-</div>
-</div>
-<div class="row">
+    <div class="single-product-slider">
+        
+        <div class="container">
 
-<?php 
-    for ($i=1; $i < 9; $i++) { 
-?>
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <div class="section-title">
+                        <h1>Latest Products</h1>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+                        dolore
+                        magna aliqua.</p>
+                    </div>
+                </div>
+            </div>
 
-<div class="col-lg-3 col-md-6">
-<div class="single-product">
-<img class="img-fluid" src="images/bg2.jpg" alt="">
-<div class="product-details">
-<h6>addidas New Hammer sole
-for Sports person</h6>
-<div class="price">
-<h6>$150.00</h6>
-<h6 class="l-through">$210.00</h6>
-</div>
-<div class="prd-bottom">
-<a href="" class="social-info">
-<span><i class='bx bx-shopping-bag' ></i></span>
-<p class="hover-text">add to bag</p>
-</a>
-<a href="" class="social-info">
-<span><i class='bx bx-heart'></i></span>
-<p class="hover-text">Wishlist</p>
-</a>
-<a href="" class="social-info">
-<span><i class='bx bx-sync' ></i></span>
-<p class="hover-text">compare</p>
-</a>
-<a href="" class="social-info">
-<span><i class='bx bx-move' ></i></span>
-<p class="hover-text">view more</p>
-</a>
-</div>
-</div>
-</div>
-</div>
+            <div class="row">
 
-<?php
-    }
-?>
+            <?php 
+                for ($i=0; $i < count($latestItems); $i++) { 
+            ?>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="single-product">
+                    <img class="img-fluid" style="width:auto;height:150px;" src="admin/products/images/<?php echo escape($latestItems[$i]['img']); ?>" alt="">
+                    <div class="product-details">
+                        <h6><?php echo escape($latestItems[$i]['name']); ?></h6>
+                        <div class="price">
+                            <h6><?php echo '$' . escape($latestItems[$i]['price']) - 0.5; ?></h6>
+                            <h6 class="l-through"><?php echo '$'. escape($latestItems[$i]['price']); ?></h6> <!-- Discount -->
+                        </div>
+                        <div class="prd-bottom">
+                            <a href="" class="social-info">
+                                <span><i class='bx bx-shopping-bag' ></i></span>
+                                <p class="hover-text">add to bag</p>
+                            </a>
+                            <a href="" class="social-info">
+                                <span><i class='bx bx-heart'></i></span>
+                                <p class="hover-text">Wishlist</p>
+                            </a>
+                            <a href="" class="social-info">
+                                <span><i class='bx bx-sync' ></i></span>
+                                <p class="hover-text">compare</p>
+                            </a>
+                            <a href="product-detail.php?id=<?php echo escape($latestItems[$i]['id']); ?>" class="social-info">
+                                <span><i class='bx bx-move' ></i></span>
+                                <p class="hover-text">view more</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <?php
+                }
+            ?>
+
+            </div>
+
+        </div>
+        
+    </div>
+
+    <div class="single-product-slider">
+        
+        <div class="container">
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6 text-center">
+                    <div class="section-title">
+                        <h1>Latest Products</h1>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+                        dolore
+                        magna aliqua.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+            <?php 
+                for ($i=0; $i < count($latestItems); $i++) { 
+            ?>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="single-product">
+                    <img class="img-fluid" style="width:auto;height:150px;" src="admin/products/images/<?php echo escape($latestItems[$i]['img']); ?>" alt="">
+                    <div class="product-details">
+                        <h6><?php echo escape($latestItems[$i]['name']); ?></h6>
+                        <div class="price">
+                            <h6><?php echo '$' . escape($latestItems[$i]['price']) - 0.5; ?></h6>
+                            <h6 class="l-through"><?php echo '$'. escape($latestItems[$i]['price']); ?></h6> <!-- Discount -->
+                        </div>
+                        <div class="prd-bottom">
+                            <a href="" class="social-info">
+                                <span><i class='bx bx-shopping-bag' ></i></span>
+                                <p class="hover-text">add to bag</p>
+                            </a>
+                            <a href="" class="social-info">
+                                <span><i class='bx bx-heart'></i></span>
+                                <p class="hover-text">Wishlist</p>
+                            </a>
+                            <a href="" class="social-info">
+                                <span><i class='bx bx-sync' ></i></span>
+                                <p class="hover-text">compare</p>
+                            </a>
+                            <a href="product-detail.php?id=<?php echo escape($latestItems[$i]['id']); ?>" class="social-info">
+                                <span><i class='bx bx-move' ></i></span>
+                                <p class="hover-text">view more</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <?php
+                }
+            ?>
 
 
-</div>
-</div>
-</div>
+            </div>
+        </div>
+    </div>
 
-<div class="single-product-slider">
-<div class="container">
-<div class="row justify-content-center">
-<div class="col-lg-6 text-center">
-<div class="section-title">
-<h1>Coming Products</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-dolore
-magna aliqua.</p>
-</div>
-</div>
-</div>
-<div class="row">
-
-<?php 
-    for ($i=1; $i < 9; $i++) { 
-?>
-
-<div class="col-lg-3 col-md-6">
-<div class="single-product">
-<img class="img-fluid" src="images/bg2.jpg" alt="">
-<div class="product-details">
-<h6>addidas New Hammer sole
-for Sports person</h6>
-<div class="price">
-<h6>$150.00</h6>
-<h6 class="l-through">$210.00</h6>
-</div>
-<div class="prd-bottom">
-<a href="" class="social-info">
-<span><i class='bx bx-shopping-bag' ></i></span>
-<p class="hover-text">add to bag</p>
-</a>
-<a href="" class="social-info">
-<span><i class='bx bx-heart'></i></span>
-<p class="hover-text">Wishlist</p>
-</a>
-<a href="" class="social-info">
-<span><i class='bx bx-sync' ></i></span>
-<p class="hover-text">compare</p>
-</a>
-<a href="" class="social-info">
-<span><i class='bx bx-move' ></i></span>
-<p class="hover-text">view more</p>
-</a>
-</div>
-</div>
-</div>
-</div>
-
-<?php
-    }
-?>
-
-</div>
-</div>
-</div>
 </section>
 
 <?php 

@@ -49,7 +49,8 @@
           <i class="fas fa-search"></i>
         </a>
         <div class="navbar-search-block">
-          <form class="form-inline" action="index.php" method="POST">
+          <form class="form-inline" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="POST">
+            <input name="_token" type="hidden" value="<?php echo $_SESSION['csrf_token']; ?>">
             <div class="input-group input-group-sm">
               <input name="search" class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
               <div class="input-group-append">
@@ -71,17 +72,27 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="../index.php" class="brand-link">
-      <span class="brand-text font-weight-light">E-commerce Shop</span>
+    <a href="../index.php" class="brand-link p-3">
+      <i class='bx bxs-shopping-bags pl-2 pr-4'></i>
+      <span>
+        Ecommerce-Shop
+      </span>
     </a>
 
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="info">
-          <a href="#" class="d-block"><?php echo $loginUser['name']; ?></a>
-        </div>
+      <div class="user-panel d-flex">
+          <!-- <a href="#" class="d-block">
+            <i class='bx bxs-user text-white' ></i>
+            <span><?php # echo $loginUser['name']; ?></span>
+          </a> -->
+          <a href="#" class="brand-link p-0 py-3">
+            <i class='bx bxs-user pl-3 pr-4' style="color:#ddd;"></i>
+            <span>
+              <?php echo $loginUser['name']; ?>
+            </span>
+          </a>
       </div>
 
       <!-- Sidebar Menu -->
@@ -91,7 +102,7 @@
                with font-awesome or any other icon font library -->
           <li class="nav-item">
             <a href="dashboard.php" class="nav-link <?php if ($link == 'dashboard.php') { echo 'active'; } ?>">
-              <i class="nav-icon fas fa-th"></i>
+              <i class='bx bxs-dashboard' ></i>
               <p>
                 Dashboard
               </p>
@@ -99,7 +110,7 @@
           </li>
           <li class="nav-item">
             <a href="products.php" class="nav-link <?php if ($link == 'products.php') { echo 'active'; } ?>">
-              <i class="nav-icon fas fa-th"></i>
+              <i class='bx bx-store-alt'></i>
               <p>
                 Products
               </p>
@@ -107,9 +118,17 @@
           </li>
           <li class="nav-item">
             <a href="category.php" class="nav-link <?php if ($link == 'category.php') { echo 'active'; } ?>">
-              <i class="nav-icon fas fa-th"></i>
+              <i class='bx bx-store-alt'></i>
               <p>
                 Category
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="orders.php" class="nav-link <?php if ($link == 'orders.php') { echo 'active'; } ?>">
+              <i class='bx bx-store-alt'></i>
+              <p>
+                Orders
               </p>
             </a>
           </li>

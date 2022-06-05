@@ -1,4 +1,34 @@
 <?php
+  session_start();
+  require 'config/database.php';
+  require 'config/common.php';
+
+  if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in'])) {
+    # Select this user with SESSION['user_id']
+    $pdo_this_user = $pdo->prepare("SELECT * FROM users WHERE id=".$_SESSION['user_id']); 
+    $pdo_this_user->execute();
+    $loginUser = $pdo_this_user->fetch(PDO::FETCH_ASSOC); 
+  }
+
+  # Get Detail Product
+  if (isset($_GET['id'])) {
+    $stmt = $pdo->prepare('SELECT * FROM products WHERE id = :id');
+    $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT); // <-- filter your data first (see [Data Filtering](#data_filtering)), especially important for INSERT, UPDATE, etc.
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT); // <-- Automatically sanitized for SQL by PDO
+    $stmt->execute();
+    $detailProduct = $stmt->fetchAll();
+  }
+
+  $categoryId = $detailProduct[0]['category_id'];
+
+  # Get Category
+  $pdo_prepare = $pdo->prepare("SELECT * FROM categories WHERE id=$categoryId");
+  $pdo_prepare->execute();
+  $category = $pdo_prepare->fetchAll();  
+
+?>
+
+<?php
   require 'unit/top.php';
   require 'unit/header_nav.php';
 ?>
@@ -35,27 +65,39 @@
       <div class="col-lg-6">
         <div class="s_Product_carousel">
           <div class="single-prd-item">
-            <img class="img-fluid" src="../images/bg2.jpg" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
+            <img class="img-fluid" src="admin/products/images/<?php echo escape($detailProduct[0]['img']) ?>" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
           </div>
           <div class="single-prd-item">
-            <img class="img-fluid" src="../images/bg2.jpg" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
+            <img class="img-fluid" src="admin/products/images/<?php echo escape($detailProduct[0]['img']) ?>" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
           </div>
           <div class="single-prd-item">
-            <img class="img-fluid" src="../images/bg2.jpg" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
+            <img class="img-fluid" src="admin/products/images/<?php echo escape($detailProduct[0]['img']) ?>" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
           </div>
         </div>
       </div>
       <div class="col-lg-5 offset-lg-1">
         <div class="s_product_text">
-          <h3>Faded SkyBlu Denim Jeans</h3>
-          <h2>$149.99</h2>
+          <h3><?php echo escape($detailProduct[0]['name']); ?></h3>
+          <h2><?php echo '$' . escape($detailProduct[0]['price']) - 0.5; ?> </h2>
+          <h2 style="text-decoration: line-through;"><?php echo '$' . escape($detailProduct[0]['price']); ?></h2>
+          
           <ul class="list">
-            <li><a class="active" href="#"><span>Category</span> : Household</a></li>
-            <li><a href="#"><span>Availibility</span> : In Stock</a></li>
+            <li><a href="#"><span>Category</span> : <?php echo escape($category[0]['name']); ?></a></li>
+            <li>
+              <a href="#">
+                <span>Availibility</span> : 
+                <b class="<?php if ($detailProduct[0]['quantity'] == 0) { echo 'text-danger'; } ?>">
+                  <?php if ($detailProduct[0]['quantity'] > 0) {
+                  echo 'In Stock';
+                  } else {
+                    echo 'Out Of Stock';
+                  }
+                  ?>
+                </b>
+              </a>
+            </li>
           </ul>
-          <p>Mill Oil is an innovative oil filled radiator with the most modern technology. If you are looking for
-          something that can make your interior look awesome, and at the same time give you the pleasant warm feeling
-          during the winter.</p>
+          <p><?php echo escape($detailProduct[0]['description']); ?></p>
           <div class="product_count">
             <label for="qty">Quantity:</label>
             <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">

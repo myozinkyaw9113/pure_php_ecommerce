@@ -16,24 +16,24 @@
   $offset = ($p - 1) * $showrecs;
 
   if (empty($_POST['search'])) {
-    $pdo_prepare = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
+    $pdo_prepare = $pdo->prepare("SELECT * FROM orders ORDER BY id DESC");
     $pdo_prepare->execute();
     $raw_result = $pdo_prepare->fetchAll();
 
     $total_pages = ceil(count($raw_result) / $showrecs);
 
-    $pdo_prepare = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC LIMIT $offset,$showrecs");
+    $pdo_prepare = $pdo->prepare("SELECT * FROM orders ORDER BY id DESC LIMIT $offset,$showrecs");
     $pdo_prepare->execute();
     $result = $pdo_prepare->fetchAll();
   } else {
     $search = $_POST['search'];
-    $pdo_prepare = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$search%' ORDER BY id DESC");
+    $pdo_prepare = $pdo->prepare("SELECT * FROM orders WHERE name LIKE '%$search%' ORDER BY id DESC");
     $pdo_prepare->execute();
     $raw_result = $pdo_prepare->fetchAll();
 
     $total_pages = ceil(count($raw_result) / $showrecs);
 
-    $pdo_prepare = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$search%' ORDER BY id DESC LIMIT $offset,$showrecs");
+    $pdo_prepare = $pdo->prepare("SELECT * FROM orders WHERE name LIKE '%$search%' ORDER BY id DESC LIMIT $offset,$showrecs");
     $pdo_prepare->execute();
     $result = $pdo_prepare->fetchAll();
   }
@@ -55,9 +55,8 @@ require 'top.php';
       <div class="row">
         <div class="col-md-12">
           <div class="card">
-            <div class="d-flex justify-content-between gap-2 align-items-center p-3" style="border-bottom:1px solid #ddd;">
-              <h3 class="card-title">Prooduct Table</h3>
-              <a href="category/create.php" class="bg-success rounded"><i class='bx bx-list-plus p-2'></i></a>
+            <div class="d-flex justify-content-between align-items-center p-3" style="border-bottom:1px solid #ddd;">
+              <h3 class="card-title">Order Table</h3>
             </div>
             
             <div class="card-body">
@@ -65,8 +64,9 @@ require 'top.php';
                 <thead>
                   <tr>
                     <th style="width: 10px">#</th>
-                    <th>Name</th>
-                    <th>Description</th>
+                    <th>Customer ID</th>
+                    <th>Total Price</th>
+                    <th>Order Date</th>
                     <th style="width: 40px">Action</th>
                   </tr>
                 </thead>
@@ -78,12 +78,12 @@ require 'top.php';
                   ?>
                   <tr>
                     <td><?php echo $num++; ?></td>
-                    <td><?php echo escape($result[$i]['name']) ;?></td>
-                    <td><?php echo escape(substr($result[$i]['description'], 0, 100)) . '...'; ?></td>
+                    <td><?php echo escape($result[$i]['customer_id']) ;?></td>
+                    <td><?php echo '$' . escape($result[$i]['total_price'], 0, 100); ?></td>
+                    <td><?php echo escape($result[$i]['order_date']) ;?></td>
                     <td>
                       <div class="d-flex gap-1">
-                        <a href="category/edit.php?id=<?php echo escape($result[$i]['id']) ; ?>" class="btn-sm btn-warning"><i class='bx bx-edit-alt'></i></a>
-                        <a href="category/delete.php?id=<?php echo escape($result[$i]['id']) ; ?>" class="btn-sm btn-danger"><i class='bx bx-trash' ></i></a>
+                        <a href="category/order-detail.php?id=<?php echo escape($result[$i]['id']) ; ?>" class="btn-sm btn-warning"><i class='bx bx-show'></i></a>
                       </div>
                     </td>
                   </tr>

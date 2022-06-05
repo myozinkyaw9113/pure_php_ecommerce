@@ -12,7 +12,7 @@
   } else {
     $p = 1;
   }
-  $showrecs = 2;
+  $showrecs = 5;
   $offset = ($p - 1) * $showrecs;
 
   if (empty($_POST['search'])) {
@@ -106,7 +106,9 @@ require 'top.php';
                   <?php
                   } else {
                   ?>
-                    <tr>No record yet!</tr>
+                    <tr>
+                      <td colspan="5" class="text-center">No record yet!</td>
+                    </tr>
                   <?php
                   }
                   ?>
