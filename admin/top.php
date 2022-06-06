@@ -44,6 +44,9 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->
+      <?php 
+        if ($link != 'orders.php' && $link != 'create.php' && $link != 'edit.php') {
+      ?>
       <li class="nav-item">
         <a class="nav-link" data-widget="navbar-search" href="#" role="button">
           <i class="fas fa-search"></i>
@@ -65,6 +68,9 @@
           </form>
         </div>
       </li>
+      <?php
+        }
+      ?>
     </ul>
   </nav>
   <!-- /.navbar -->

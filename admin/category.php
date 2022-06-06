@@ -4,6 +4,15 @@
   require '../config/common.php';
   require 'loginUser.php';
 
+  if (isset($_POST['search'])) {
+    setcookie('search',$_POST['search'], time() + (86400 * 30), "/");
+  } else {
+    if (empty($_GET['p'])) { 
+      unset($_COOKIE['search']);
+      setcookie('search',null, -1, '/');
+    }
+  }
+
   # Pagination 
   # p = $pageno;
   $p = '';
@@ -15,7 +24,7 @@
   $showrecs = 10;
   $offset = ($p - 1) * $showrecs;
 
-  if (empty($_POST['search'])) {
+  if (empty($_POST['search']) && empty($_COOKIE['search'])) {
     $pdo_prepare = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
     $pdo_prepare->execute();
     $raw_result = $pdo_prepare->fetchAll();
@@ -26,7 +35,11 @@
     $pdo_prepare->execute();
     $result = $pdo_prepare->fetchAll();
   } else {
-    $search = $_POST['search'];
+    if (isset($_POST['search'])) {
+      $search = $_POST['search'];
+    } else {
+      $search = $_COOKIE['search'];
+    }
     $pdo_prepare = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$search%' ORDER BY id DESC");
     $pdo_prepare->execute();
     $raw_result = $pdo_prepare->fetchAll();
@@ -56,7 +69,7 @@ require 'top.php';
         <div class="col-md-12">
           <div class="card">
             <div class="d-flex justify-content-between gap-2 align-items-center p-3" style="border-bottom:1px solid #ddd;">
-              <h3 class="card-title">Prooduct Table</h3>
+              <h3 class="card-title">Category Listing</h3>
               <a href="category/create.php" class="bg-success rounded"><i class='bx bx-list-plus p-2'></i></a>
             </div>
             

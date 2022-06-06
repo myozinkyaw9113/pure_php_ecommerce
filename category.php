@@ -11,36 +11,76 @@
         $loginUser = $pdo_this_user->fetch(PDO::FETCH_ASSOC);
     }
 
-    # Pagination 
-    # p = $pageno;
-    $p = '';
-    if (!empty($_GET['p'])) {
-        $p = $_GET['p'];
-    } else {
-        $p = 1;
-    }
-    $showrecs = 8;
-    $offset = ($p - 1) * $showrecs;
-
     $pdo_prepare = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
     $pdo_prepare->execute();
     $categoryResult = $pdo_prepare->fetchAll();
-    
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $categoryId = $_POST['category_id'];
+    if (isset($_POST['search'])) {
+        setcookie('search',$_POST['search'], time() + (86400 * 30), "/");
+      } else {
+        if (empty($_GET['p'])) { 
+          unset($_COOKIE['search']);
+          setcookie('search',null, -1, '/');
+        }
+      }
+    
+      # Pagination 
+      # p = $pageno;
+      $p = '';
+      if (!empty($_GET['p'])) {
+        $p = $_GET['p'];
+      } else {
+        $p = 1;
+      }
+      $showrecs = 9;
+      $offset = ($p - 1) * $showrecs;
+    
+    if (empty($_POST['search']) && empty($_COOKIE['search'])) {
+        $pdo_prepare = $pdo->prepare("SELECT * FROM products ORDER BY id DESC");
+        $pdo_prepare->execute();
+        $raw_result = $pdo_prepare->fetchAll();
+    
+        $total_pages = ceil(count($raw_result) / $showrecs);
+    
+        $pdo_prepare = $pdo->prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$showrecs");
+        $pdo_prepare->execute();
+        $result = $pdo_prepare->fetchAll();
+    } else {
+        if (isset($_POST['search'])) {
+          $search = $_POST['search'];
+        } else {
+          $search = $_COOKIE['search'];
+        }
+        $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$search%' ORDER BY id DESC");
+        $pdo_prepare->execute();
+        $raw_result = $pdo_prepare->fetchAll();
+    
+        $total_pages = ceil(count($raw_result) / $showrecs);
+    
+        $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$search%' ORDER BY id DESC LIMIT $offset,$showrecs");
+        $pdo_prepare->execute();
+        $result = $pdo_prepare->fetchAll();
+    }
+
+    if (isset($_GET['name'])) {
+        $categoryName = $_GET['name'];
+
+        foreach($categoryResult as $value) {
+            if ($value['name'] == $categoryName) {
+                $categoryId = $value['id'];
+            }
+        }
 
         $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE category_id=$categoryId ORDER BY id DESC");
         $pdo_prepare->execute();
         $raw_result = $pdo_prepare->fetchAll();
-
+    
         $total_pages = ceil(count($raw_result) / $showrecs);
-
+    
         $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE category_id=$categoryId ORDER BY id DESC LIMIT $offset,$showrecs");
         $pdo_prepare->execute();
-        $productResult = $pdo_prepare->fetchAll();
+        $result = $pdo_prepare->fetchAll();
     }
-
 ?>
 
 <?php
@@ -101,17 +141,20 @@ require 'unit/header_nav.php';
                 <ul class="main-categories p-0">
 
                     <?php 
-                        for ($i=0; $i < count($categoryResult); $i++) { 
+                        foreach ($categoryResult as $category) { 
                     ?>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="POST">
+                    <?php
+                    $prod_stmt = $pdo->prepare("SELECT * FROM products WHERE category_id=".$category['id']);
+                    $prod_stmt->execute();
+                    $prod_count = $prod_stmt->fetchAll();
+                    ?>
 
-                        <input name="_token" type="hidden" value="<?php echo $_SESSION['csrf_token']; ?>">
                         <li class="main-nav-list" style="border-bottom: 1px solid #bbb;">
-                            <input type="hidden" value="<?php echo escape($categoryResult[$i]['id']); ?>" name="category_id">
-                            <input type="submit" value="<?php echo escape($categoryResult[$i]['name']) . '(?)'; ?>" class="lnr lnr-arrow-right w-100 d-flex searchCategory">
+                            <a href="?name=<?php echo $category['name']; ?>">
+                                <?php echo $category['name']; ?>
+                                (<?php echo count($prod_count) ?>)
+                            </a>
                         </li>
-
-                    </form>
 
                     <?php
                         }
@@ -144,13 +187,13 @@ require 'unit/header_nav.php';
                 </div>
 
                 <div class="pagination">
-                    <a href="#" href="?p=1" class="prev-arrow">
+                    <a href="?p=1" class="prev-arrow">
                         <i class='bx bx-chevrons-left'></i>
                     </a>
-                    <a class="active <?php if($p <= 1){ echo 'disabled'; } ?>" href="<?php if($p <= 1){ echo '#'; }else{ echo '?p='.($p-1); } ?>">
+                    <a class="<?php if($p <= 1){ echo 'disabled'; } ?>" href="<?php if($p <= 1){ echo '#'; }else{ echo '?p='.($p-1); } ?>">
                         <i class='bx bxs-chevron-left' ></i>
                     </a>
-                    <a href="#">C</a>
+                    <a href="#" class="active"><?php echo $p; ?></a>
                     <a class="<?php if($p >= $total_pages){ echo 'disabled'; } ?>" href="<?php if($p >= $total_pages){ echo '#'; }else{ echo '?p='.($p+1); } ?>" class="<?php if($p >= $total_pages){ echo 'disabled'; } ?>">
                         <i class='bx bxs-chevron-right' ></i>
                     </a>
@@ -167,17 +210,13 @@ require 'unit/header_nav.php';
                 <div class="row"> 
 
                     <?php 
-                        if (empty($productResult)) {
-                            echo '
-                            <h3 class="p-0 m-5">Please, click anything from <u>Browse category</u> to search for you a individual result.
-                            </br>
-                            <b>If clicking result is blank, It is empty in your category search.</b>
-                            </h3>';
+                        if (empty($result)) {
+                            echo '<h3 class="p-0 m-5">Non Products</h3>';
                         } else {
                     ?>
 
                     <?php 
-                        foreach ($productResult as $key => $value) {
+                        foreach ($result as $value) {
                     ?>
 
                     <div class="col-lg-4 col-md-6">
@@ -205,7 +244,7 @@ require 'unit/header_nav.php';
                                         <span><i class='bx bx-sync' ></i></span>
                                         <p class="hover-text">compare</p>
                                     </a>
-                                    <a href="" class="social-info">
+                                    <a href="product-detail.php?id=<?php echo escape($value['id']); ?>" class="social-info">
                                         <span><i class='bx bx-move'></i></span>
                                         <p class="hover-text">view more</p>
                                     </a>

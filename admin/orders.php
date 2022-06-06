@@ -15,28 +15,15 @@
   $showrecs = 10;
   $offset = ($p - 1) * $showrecs;
 
-  if (empty($_POST['search'])) {
-    $pdo_prepare = $pdo->prepare("SELECT * FROM orders ORDER BY id DESC");
-    $pdo_prepare->execute();
-    $raw_result = $pdo_prepare->fetchAll();
+  $pdo_prepare = $pdo->prepare("SELECT * FROM orders ORDER BY id DESC");
+  $pdo_prepare->execute();
+  $raw_result = $pdo_prepare->fetchAll();
 
-    $total_pages = ceil(count($raw_result) / $showrecs);
+  $total_pages = ceil(count($raw_result) / $showrecs);
 
-    $pdo_prepare = $pdo->prepare("SELECT * FROM orders ORDER BY id DESC LIMIT $offset,$showrecs");
-    $pdo_prepare->execute();
-    $result = $pdo_prepare->fetchAll();
-  } else {
-    $search = $_POST['search'];
-    $pdo_prepare = $pdo->prepare("SELECT * FROM orders WHERE name LIKE '%$search%' ORDER BY id DESC");
-    $pdo_prepare->execute();
-    $raw_result = $pdo_prepare->fetchAll();
-
-    $total_pages = ceil(count($raw_result) / $showrecs);
-
-    $pdo_prepare = $pdo->prepare("SELECT * FROM orders WHERE name LIKE '%$search%' ORDER BY id DESC LIMIT $offset,$showrecs");
-    $pdo_prepare->execute();
-    $result = $pdo_prepare->fetchAll();
-  }
+  $pdo_prepare = $pdo->prepare("SELECT * FROM orders ORDER BY id DESC LIMIT $offset,$showrecs");
+  $pdo_prepare->execute();
+  $result = $pdo_prepare->fetchAll();
 
 ?>
 
@@ -74,16 +61,21 @@ require 'top.php';
                 <?php 
                   if ($result) {
                     $num = 1;
-                    for ($i=0; $i < count($result); $i++) { 
+                    foreach ($result as $value) { 
+                  ?>
+                  <?php
+                    $user_stmt = $pdo->prepare("SELECT * FROM users WHERE id=".$value['customer_id']);
+                    $user_stmt->execute();
+                    $user = $user_stmt->fetchAll();
                   ?>
                   <tr>
                     <td><?php echo $num++; ?></td>
-                    <td><?php echo escape($result[$i]['customer_id']) ;?></td>
-                    <td><?php echo '$' . escape($result[$i]['total_price'], 0, 100); ?></td>
-                    <td><?php echo escape($result[$i]['order_date']) ;?></td>
+                    <td><?php echo escape($user[0]['name']) ;?></td>
+                    <td><?php echo '$' . escape($value['total_price']); ?></td>
+                    <td><?php echo escape($value['order_date']) ;?></td>
                     <td>
                       <div class="d-flex gap-1">
-                        <a href="category/order-detail.php?id=<?php echo escape($result[$i]['id']) ; ?>" class="btn-sm btn-warning"><i class='bx bx-show'></i></a>
+                        <a href="order/order-detail.php?id=<?php echo escape($value['id']) ; ?>" class="btn-sm btn-warning"><i class='bx bx-show'></i></a>
                       </div>
                     </td>
                   </tr>

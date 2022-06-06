@@ -2,6 +2,7 @@
   session_start();
   require '../../config/database.php';
   require '../../config/common.php';
+  require '../loginUser.php';
 ?>
 
 <?php
