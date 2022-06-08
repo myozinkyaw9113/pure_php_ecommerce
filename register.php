@@ -2,6 +2,7 @@
   session_start();
   require 'config/database.php';
   require 'config/common.php';
+  require 'unit/href.php';
 
   $name = $email = $password = "";
   $nameErr = $emailErr = $passwordErr = $lengthErr = "";

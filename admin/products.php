@@ -113,7 +113,7 @@ require 'top.php';
                     <td><?php echo escape($category[0]['name']) ;?></td>
                     <td>
                       <div class="d-flex gap-1">
-                        <a href="products/edit.php?id=<?php echo escape($value['id']); ?>" class="btn-sm btn-warning"><i class='bx bx-message-alt-detail'></i></a>
+                        <a href="products/edit.php?id=<?php echo escape($value['id']); ?>" class="btn-sm btn-warning"><i class='bx bx-edit-alt'></i></a>
                         <a href="products/delete.php?id=<?php echo escape($value['id']); ?>" class="btn-sm btn-danger"><i class='bx bx-trash'></i></a>
                       </div>
                     </td>

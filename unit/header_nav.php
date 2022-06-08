@@ -2,7 +2,7 @@
     <div class="main_menu">
         <nav class="navbar navbar-expand-lg navbar-light main_box">
             <div class="container">
-            <a class="navbar-brand logo_h" href="php_ecommerce/../index.php"><img style="width:100px;height:auto;" src="images/logo.webp" alt=""></a>
+                <a class="navbar-brand logo_h" href="php_ecommerce/../index.php"><img style="width:100px;height:auto;" src="images/logo.webp" alt=""></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -12,7 +12,6 @@
                 <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
                     <ul class="nav navbar-nav menu_nav ml-auto">
                         <li class="nav-item <?php if($link == 'index.php') { echo 'active'; } ?>"><a class="nav-link" href="php_ecommerce/../index.php">Home</a></li>
-                        <li class="nav-item <?php if($link == 'category.php') { echo 'active'; } ?>"><a class="nav-link" href="php_ecommerce/../category.php">Shop Category</a></li>
                         <?php
                             if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                         ?>
@@ -40,14 +39,26 @@
                         <?php
                         }
                         ?>
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                        <li class="nav-item <?php if($link == 'cart.php') { echo 'active'; } ?>"><a href="php_ecommerce/../cart.php" class="cart"><i class='bx bx-shopping-bag'></i></a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        
+                        <?php if (isset($_SESSION['user_id'])) { ?>
+                            <li class="nav-item <?php if($link == 'cart.php') { echo 'active'; } ?>"><a href="php_ecommerce/../cart.php" class="cart"><i class='bx bx-shopping-bag'></i></a></li>
+                        <?php
+                            }
+                        ?>
+
+                        <?php
+                            if ($link == 'category.php') {
+                        ?>
                         <li class="nav-item">
                             <button class="search">
                                 <i class='bx bx-search-alt-2' id="search"></i>
                             </button>
                         </li>
+                        <?php
+                            }
+                        ?>
                     </ul>
                 </div>
             </div>

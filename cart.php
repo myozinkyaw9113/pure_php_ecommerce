@@ -1,17 +1,41 @@
 <?php
-  require 'unit/href.php';
-  require 'unit/top.php';
-  require 'unit/header_nav.php';
+  session_start();
+  require 'config/database.php';
+  require 'config/common.php';
+
+  if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in'])) {
+    # Select this user with SESSION['user_id']
+    $pdo_this_user = $pdo->prepare("SELECT * FROM users WHERE id=".$_SESSION['user_id']); 
+    $pdo_this_user->execute();
+    $loginUser = $pdo_this_user->fetch(PDO::FETCH_ASSOC);
+  }
+
+  $sessionUserId = $_SESSION['user_id'];
+  $pdo_prepare = $pdo->prepare("SELECT * FROM cart WHERE customer_id=$sessionUserId ORDER BY id DESC");
+  $pdo_prepare->execute();
+  $cartResult = $pdo_prepare->fetchAll();
+?>
+
+<?php
+require 'unit/href.php';
+require 'unit/top.php';
+require 'unit/header_nav.php';
 ?>
 
 <style>
-    .cart_banner_area {
-      background: url(images/bg1.webp) center no-repeat;
-      background-size: cover;
-    }
-    .cart_banner_area h1, .cart_banner_area nav a {
-        color: #000;
-    }
+  .cart_banner_area {
+    background: url(images/bg1.webp) center no-repeat;
+    background-size: cover;
+  }
+  .cart_banner_area h1, .cart_banner_area nav a {
+    color: #000;
+  }
+
+  input.quantity {
+    border: 1px solid #bbb;
+    outline: 1px solid #bbb;
+  }
+
 </style>
 
 
@@ -40,43 +64,67 @@
               <th scope="col">Product</th>
               <th scope="col">Price</th>
               <th scope="col">Quantity</th>
-              <th scope="col">Total</th>
+              <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
             <?php 
-              for ($i=1; $i < 9; $i++) { 
+              foreach ($cartResult as $value) { 
+            ?>
+            <?php
+              $productId = $value['product_id'];
+              $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE id=$productId");
+              $pdo_prepare->execute();
+              $productResult = $pdo_prepare->fetchAll();
+
+              $price = 0;
+              $price += $productResult[0]['price'] * $value['quantity'];
+              $price_array = array();
+              $price_array = array_push($price);
+              print_r($price_array);
+
             ?>
             <tr>
               <td>
                 <div class="media">
                 <div class="d-flex">
-                <img src="images/bg2.jpg" style="width:100px;height:auto;"
+                <img src="admin/products/images/<?php echo escape($productResult[0]['img']) ?>" style="width:100px;height:auto;"
                 alt="" data-pagespeed-url-hash="1739756765" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
                 </div>
                 <div class="media-body">
-                <p>Minimalistic shop for multipurpose use</p>
+                <p><?php echo escape($productResult[0]['name']) ?></p>
                 </div>
                 </div>
               </td>
               <td>
-                <h5>$360.00</h5>
+                <h5><?php echo '$' . escape($productResult[0]['price']) * escape($value['quantity']); ?></h5>
               </td>
               <td>
                 <div class="product_count">
-                  <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
-                  <button class="increase items-count" type="button"><i class='bx bxs-up-arrow'></i></button>
-                  <button class="reduced items-count" type="button"><i class='bx bxs-down-arrow' ></i></button>
+                  <input type="number" name="quantity" class="quantity" min="1" value="<?php echo escape($value['quantity']) ?>">
                 </div>
               </td>
               <td>
-                <h5>$720.00</h5>
+              <a href="cart/delete.php?id=<?php echo escape($value['id']) ?>" class="btn btn-danger p-2"><i class='bx bx-trash'></i></a>
               </td>
             </tr>
-            <?php
-              }
-            ?>
           </tbody>
+          <?php
+            }
+          ?>
+          <tfoot>
+            <tr>
+              <td colspan="3">
+                Total : 
+              </td>
+              <td>
+                <?php
+                  
+                ?>
+              </td>
+            </tr>
+          </tfoot>
+          
         </table>
       </div>
     </div>

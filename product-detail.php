@@ -18,17 +18,30 @@
     $stmt->execute();
     $detailProduct = $stmt->fetchAll();
   }
+  
+  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $customer_id = $_SESSION['user_id'];
+    $productId = $_POST['product_id'];
+    $quantity = $_POST['quantity'];
 
-  $categoryId = $detailProduct[0]['category_id'];
-
-  # Get Category
-  $pdo_prepare = $pdo->prepare("SELECT * FROM categories WHERE id=$categoryId");
-  $pdo_prepare->execute();
-  $category = $pdo_prepare->fetchAll();  
+    $sql = "INSERT INTO cart(customer_id,product_id,quantity) VALUE(:customer_id,:product_id,:quantity)";
+    $pdo_prepare = $pdo->prepare($sql);
+    $result = $pdo_prepare->execute(
+      array (
+        ':customer_id' => $customer_id,
+        ':product_id' => $productId,
+        ':quantity' => $quantity,
+      )
+    );
+    if ($result) {
+      echo '<script>alert("Cart Item successfully inserted");window.location.href="index.php";</script>';
+    }
+  }
 
 ?>
 
 <?php
+  require 'unit/href.php';
   require 'unit/top.php';
   require 'unit/header_nav.php';
 ?>
@@ -39,7 +52,15 @@
     background-size: cover;
   }
   .product_banner_area h1, .product_banner_area nav a {
-      color: #000;
+    color: #000;
+  }
+  .quantity {
+    border: 1px solid #bbb;
+    outline: 1px solid #bbb;
+  }
+
+  button {
+    border: transparent;
   }
 </style>
 
@@ -59,35 +80,39 @@
 </section>
 
 
-<div class="product_image_area">
+<div class="product_image_area pt-5">
   <div class="container">
     <div class="row s_product_inner">
       <div class="col-lg-6">
-        <div class="s_Product_carousel">
-          <div class="single-prd-item">
-            <img class="img-fluid" src="admin/products/images/<?php echo escape($detailProduct[0]['img']) ?>" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
+        <!-- <div class="s_Product_carousel"> -->
+          <div class="single-prd-item text-center">
+            <img class="img-fluid" style="height: 300px;width:auto;" src="admin/products/images/<?php echo escape($detailProduct[0]['img']) ?>" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
           </div>
-          <div class="single-prd-item">
-            <img class="img-fluid" src="admin/products/images/<?php echo escape($detailProduct[0]['img']) ?>" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
-          </div>
-          <div class="single-prd-item">
-            <img class="img-fluid" src="admin/products/images/<?php echo escape($detailProduct[0]['img']) ?>" alt="" data-pagespeed-url-hash="371695269" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
-          </div>
-        </div>
+        <!-- </div> -->
       </div>
       <div class="col-lg-5 offset-lg-1">
-        <div class="s_product_text">
-          <h3><?php echo escape($detailProduct[0]['name']); ?></h3>
-          <h2><?php echo '$' . escape($detailProduct[0]['price']) - 0.5; ?> </h2>
-          <h2 style="text-decoration: line-through;"><?php echo '$' . escape($detailProduct[0]['price']); ?></h2>
+
+        <?php foreach($detailProduct as $value) { ?>
+
+          <?php
+            # Get Category
+            $pdo_prepare = $pdo->prepare("SELECT * FROM categories WHERE id=".$value['category_id']);
+            $pdo_prepare->execute();
+            $category = $pdo_prepare->fetchAll(); 
+          ?>
+
+        <div class="s_product_text mt-0">
+          <h3><?php echo escape($value['name']); ?></h3>
+          <h2><?php echo '$' . escape($value['price']) - 0.5; ?> </h2>
+          <h2 style="text-decoration: line-through;"><?php echo '$' . escape($value['price']); ?></h2>
           
           <ul class="list">
             <li><a href="#"><span>Category</span> : <?php echo escape($category[0]['name']); ?></a></li>
             <li>
               <a href="#">
                 <span>Availibility</span> : 
-                <b class="<?php if ($detailProduct[0]['quantity'] == 0) { echo 'text-danger'; } ?>">
-                  <?php if ($detailProduct[0]['quantity'] > 0) {
+                <b class="<?php if ($value['quantity'] == 0) { echo 'text-danger'; } ?>">
+                  <?php if ($value['quantity'] > 0) {
                   echo 'In Stock';
                   } else {
                     echo 'Out Of Stock';
@@ -97,19 +122,33 @@
               </a>
             </li>
           </ul>
-          <p><?php echo escape($detailProduct[0]['description']); ?></p>
-          <div class="product_count">
-            <label for="qty">Quantity:</label>
-            <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
-            <button class="increase items-count" type="button"><i class='bx bxs-up-arrow' ></i></button>
-            <button class="reduced items-count" type="button"><i class='bx bxs-down-arrow' ></i></button>
-          </div>
-          <div class="card_area d-flex align-items-center">
-            <a class="primary-btn" href="#">Add to Cart</a>
-            <a class="icon_btn" href="#"><i class='bx bx-diamond' ></i></a>
-            <a class="icon_btn" href="#"><i class='bx bx-heart' ></i></a>
-          </div>
+          <p><?php echo escape($value['description']); ?></p>
+          <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="POST">
+            <input name="_token" type="hidden" value="<?php echo $_SESSION['csrf_token']; ?>">
+            <input type="hidden" name="product_id" value="<?php echo escape($value['id']); ?>">
+            <div class="product_count">
+              <label for="qty">Quantity:</label>
+              <input type="number" name="quantity" min="1" value="1" class="quantity">
+            </div>
+            <div class="card_area d-flex">
+              <?php 
+                if (isset($_SESSION['user_id'])) {
+                  if ($value['quantity'] > 0) {
+              ?>
+                <button type="submit" class="primary-btn">Add to Cart</button>
+              <?php
+                  }
+                }
+              ?>
+              <a class="primary-btn" href="index.php">Back</a>
+              <!-- <a class="icon_btn" href="#"><i class='bx bx-diamond' ></i></a>
+              <a class="icon_btn" href="#"><i class='bx bx-heart' ></i></a> -->
+            </div>
+          </form>
         </div>
+
+        <?php } ?>
+
       </div>
     </div>
   </div>
