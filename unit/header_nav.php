@@ -1,3 +1,12 @@
+<?php
+    $cart = 0;
+    if ($_SESSION['cart']) {
+        foreach($_SESSION['cart'] as $key => $qty) {
+            $cart += $qty;
+        }
+    }
+?>
+
 <header class="header_area sticky-header">
     <div class="main_menu">
         <nav class="navbar navbar-expand-lg navbar-light main_box">
@@ -43,7 +52,13 @@
                     <ul class="nav navbar-nav navbar-right">
                         
                         <?php if (isset($_SESSION['user_id'])) { ?>
-                            <li class="nav-item <?php if($link == 'cart.php') { echo 'active'; } ?>"><a href="php_ecommerce/../cart.php" class="cart"><i class='bx bx-shopping-bag'></i></a></li>
+                            <li class="nav-item <?php if($link == 'cart.php') { echo 'active'; } ?>">
+                                <a href="php_ecommerce/../cart.php" class="cart">
+                                    <i class='bx bx-shopping-bag'></i>
+                                    <span class="badge px-1 text-bg-warning" style="line-height: 10px;"><?php echo $cart; ?></span>
+                                </a>
+                                
+                            </li>
                         <?php
                             }
                         ?>

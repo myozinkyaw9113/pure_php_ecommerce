@@ -3,6 +3,10 @@
   require 'config/database.php';
   require 'config/common.php';
 
+  // session_destroy();
+  // print_r($_SESSION['cart']);
+  // die();
+
   if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in'])) {
     # Select this user with SESSION['user_id']
     $pdo_this_user = $pdo->prepare("SELECT * FROM users WHERE id=".$_SESSION['user_id']); 
@@ -14,6 +18,7 @@
   $pdo_prepare = $pdo->prepare("SELECT * FROM cart WHERE customer_id=$sessionUserId ORDER BY id DESC");
   $pdo_prepare->execute();
   $cartResult = $pdo_prepare->fetchAll();
+
 ?>
 
 <?php
@@ -68,28 +73,30 @@ require 'unit/header_nav.php';
             </tr>
           </thead>
           <tbody>
-            <?php 
-              foreach ($cartResult as $value) { 
+            <?php
+              if (empty($cartResult)) {
+            ?>
+            <tr>
+              <td>No cart item</td>
+            </tr>
+            <?php
+              } else {
+              $totalprice = 0;
+              foreach ($cartResult as $value) {
+                $totalprice += $value['total_price']; 
             ?>
             <?php
               $productId = $value['product_id'];
               $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE id=$productId");
               $pdo_prepare->execute();
               $productResult = $pdo_prepare->fetchAll();
-
-              $price = 0;
-              $price += $productResult[0]['price'] * $value['quantity'];
-              $price_array = array();
-              $price_array = array_push($price);
-              print_r($price_array);
-
             ?>
             <tr>
               <td>
                 <div class="media">
                 <div class="d-flex">
-                <img src="admin/products/images/<?php echo escape($productResult[0]['img']) ?>" style="width:100px;height:auto;"
-                alt="" data-pagespeed-url-hash="1739756765" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
+                  <a href="product-detail.php?id=<?php echo escape($value['product_id']); ?>"><img src="admin/products/images/<?php echo escape($productResult[0]['img']) ?>" style="width:100px;height:auto;"
+                  alt=""></a>
                 </div>
                 <div class="media-body">
                 <p><?php echo escape($productResult[0]['name']) ?></p>
@@ -105,12 +112,16 @@ require 'unit/header_nav.php';
                 </div>
               </td>
               <td>
-              <a href="cart/delete.php?id=<?php echo escape($value['id']) ?>" class="btn btn-danger p-2"><i class='bx bx-trash'></i></a>
+              <a href="cart/delete.php?id=<?php echo escape($value['id']); ?>" class="btn btn-danger p-2"><i class='bx bx-trash'></i></a>
               </td>
             </tr>
+            <?php
+                } 
+              }
+            ?>
           </tbody>
           <?php
-            }
+          if (count($cartResult) > 0) {
           ?>
           <tfoot>
             <tr>
@@ -119,12 +130,14 @@ require 'unit/header_nav.php';
               </td>
               <td>
                 <?php
-                  
+                  echo '$' . $totalprice;
                 ?>
               </td>
             </tr>
           </tfoot>
-          
+          <?php
+          }
+          ?>
         </table>
       </div>
     </div>

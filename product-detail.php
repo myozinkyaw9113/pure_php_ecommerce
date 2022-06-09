@@ -1,5 +1,8 @@
 <?php
   session_start();
+  // session_destroy();
+  // print_r($_SESSION['cart']);
+  // die();
   require 'config/database.php';
   require 'config/common.php';
 
@@ -24,17 +27,42 @@
     $productId = $_POST['product_id'];
     $quantity = $_POST['quantity'];
 
-    $sql = "INSERT INTO cart(customer_id,product_id,quantity) VALUE(:customer_id,:product_id,:quantity)";
-    $pdo_prepare = $pdo->prepare($sql);
-    $result = $pdo_prepare->execute(
-      array (
-        ':customer_id' => $customer_id,
-        ':product_id' => $productId,
-        ':quantity' => $quantity,
-      )
-    );
-    if ($result) {
-      echo '<script>alert("Cart Item successfully inserted");window.location.href="index.php";</script>';
+    $selectProdcut = $pdo->prepare("SELECT * FROM products WHERE id=$productId");
+    $selectProdcut->execute();
+    $sProduct = $selectProdcut->fetch(PDO::FETCH_ASSOC);
+
+    if ($quantity > $sProduct['quantity']) {
+      echo "<script>alert('Not enough item');window.location.href='product-detail.php?id=$productId'</script>";
+    } else {
+      if (empty($_SESSION['cart']['pid'.$productId])) {
+        $qty = $_SESSION['cart']['pid'.$productId] = $quantity;
+        $totalprice = $qty * $sProduct['price'];
+        $sql = "INSERT INTO cart(customer_id,product_id,quantity,total_price) 
+        VALUE(:customer_id,:product_id,:quantity,:total_price)";
+        $pdo_prepare = $pdo->prepare($sql);
+        $result = $pdo_prepare->execute(
+          array (
+            ':customer_id' => $customer_id,
+            ':product_id' => $productId,
+            ':quantity' => $qty,
+            ':total_price' => $totalprice
+          )
+        );
+        if ($result) {
+          echo '<script>alert("Cart Item successfully inserted");window.location.href="index.php";</script>';
+        }
+      } else {
+        $qty = $_SESSION['cart']['pid'.$productId] += $quantity;
+        $totalprice = $qty * $sProduct['price'];
+        $sql = "UPDATE cart SET quantity='$qty', total_price=$totalprice
+        WHERE customer_id=".$_SESSION['user_id'] . " AND product_id=".$productId;
+        $pdo_prepare = $pdo->prepare($sql);
+        $result = $pdo_prepare->execute();
+        if ($result) {
+          echo '<script>alert("Cart Item successfully updated");window.location.href="index.php";</script>';
+        }
+      }
+      header('Location: product-detail.php?id='.$productId);
     }
   }
 
