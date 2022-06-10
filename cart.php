@@ -14,11 +14,6 @@
     $loginUser = $pdo_this_user->fetch(PDO::FETCH_ASSOC);
   }
 
-  $sessionUserId = $_SESSION['user_id'];
-  $pdo_prepare = $pdo->prepare("SELECT * FROM cart WHERE customer_id=$sessionUserId ORDER BY id DESC");
-  $pdo_prepare->execute();
-  $cartResult = $pdo_prepare->fetchAll();
-
 ?>
 
 <?php
@@ -74,54 +69,54 @@ require 'unit/header_nav.php';
           </thead>
           <tbody>
             <?php
-              if (empty($cartResult)) {
-            ?>
-            <tr>
-              <td>No cart item</td>
-            </tr>
-            <?php
-              } else {
-              $totalprice = 0;
-              foreach ($cartResult as $value) {
-                $totalprice += $value['total_price']; 
-            ?>
-            <?php
-              $productId = $value['product_id'];
-              $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE id=$productId");
-              $pdo_prepare->execute();
-              $productResult = $pdo_prepare->fetchAll();
+              if (!empty($_SESSION['cart'])) {
+                $totalprice = 0;
+                foreach ($_SESSION['cart'] as $key => $qty) {
+                  $product_id = str_replace('pid','',$key);
+
+                  $stmt = $pdo->prepare("SELECT * FROM products WHERE id=$product_id");
+                  $stmt->execute();
+                  $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                  $totalprice += $result[0]['price'] * $qty; 
             ?>
             <tr>
               <td>
                 <div class="media">
                 <div class="d-flex">
-                  <a href="product-detail.php?id=<?php echo escape($value['product_id']); ?>"><img src="admin/products/images/<?php echo escape($productResult[0]['img']) ?>" style="width:100px;height:auto;"
+                  <a href="product-detail.php?id=<?php echo $result[0]['id']; ?>"><img src="admin/products/images/<?php echo escape($result[0]['img']) ?>" style="width:100px;height:auto;"
                   alt=""></a>
                 </div>
                 <div class="media-body">
-                <p><?php echo escape($productResult[0]['name']) ?></p>
+                <p><?php echo escape($result[0]['name']) ?></p>
                 </div>
                 </div>
               </td>
               <td>
-                <h5><?php echo '$' . escape($productResult[0]['price']) * escape($value['quantity']); ?></h5>
+                <h5><?php echo '$' . escape($result[0]['price']) * $qty; ?></h5>
               </td>
               <td>
                 <div class="product_count">
-                  <input type="number" name="quantity" class="quantity" min="1" value="<?php echo escape($value['quantity']) ?>">
+                  <input type="text" value="<?php echo $qty ?>" readonly>
                 </div>
               </td>
               <td>
-              <a href="cart/delete.php?id=<?php echo escape($value['id']); ?>" class="btn btn-danger p-2"><i class='bx bx-trash'></i></a>
+              <a href="cart/delete.php?id=<?php echo $product_id; ?>" class="primary-btn p-0 px-3"><i class='bx bx-trash'></i></a>
               </td>
             </tr>
             <?php
-                } 
+                }  
+              } else {
+            ?>
+            <tr>
+              <td colspan="4">No item</td>
+            </tr>
+            <?php
               }
             ?>
           </tbody>
           <?php
-          if (count($cartResult) > 0) {
+            if (!empty($_SESSION['cart'])) {
           ?>
           <tfoot>
             <tr>
@@ -134,9 +129,18 @@ require 'unit/header_nav.php';
                 ?>
               </td>
             </tr>
+            <tr>
+              <td colspan="4">
+                <div class="cupon_text d-flex align-items-center justify-content-end">
+                  <a href="cart/cart-clear.php" class="gray_btn">Clear All</a>
+                  <a class="gray_btn" href="index.php">Continue Shopping</a>
+                  <a class="primary-btn" style="border-radius:0;line-height:40px;" href="checkout.php">Checkout</a>
+                </div>
+              </td>
+            </tr>
           </tfoot>
           <?php
-          }
+            }
           ?>
         </table>
       </div>

@@ -45,23 +45,23 @@
                 }
             }
     
-            $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE category_id=$categoryId ORDER BY id DESC");
+            $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE category_id=$categoryId AND quantity > 0 ORDER BY id DESC");
             $pdo_prepare->execute();
             $raw_result = $pdo_prepare->fetchAll();
         
             $total_pages = ceil(count($raw_result) / $showrecs);
         
-            $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE category_id=$categoryId ORDER BY id DESC LIMIT $offset,$showrecs");
+            $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE category_id=$categoryId AND quantity > 0 ORDER BY id DESC LIMIT $offset,$showrecs");
             $pdo_prepare->execute();
             $result = $pdo_prepare->fetchAll();
         } else {
-            $pdo_prepare = $pdo->prepare("SELECT * FROM products ORDER BY id DESC");
+            $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE quantity > 0 ORDER BY id DESC");
             $pdo_prepare->execute();
             $raw_result = $pdo_prepare->fetchAll();
         
             $total_pages = ceil(count($raw_result) / $showrecs);
         
-            $pdo_prepare = $pdo->prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$showrecs");
+            $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE quantity > 0 ORDER BY id DESC LIMIT $offset,$showrecs");
             $pdo_prepare->execute();
             $result = $pdo_prepare->fetchAll();
         }
@@ -71,13 +71,13 @@
         } else {
           $search = $_COOKIE['search'];
         }
-        $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$search%' ORDER BY id DESC");
+        $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$search%' AND quantity > 0 ORDER BY id DESC");
         $pdo_prepare->execute();
         $raw_result = $pdo_prepare->fetchAll();
     
         $total_pages = ceil(count($raw_result) / $showrecs);
     
-        $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$search%' ORDER BY id DESC LIMIT $offset,$showrecs");
+        $pdo_prepare = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$search%' AND quantity > 0 ORDER BY id DESC LIMIT $offset,$showrecs");
         $pdo_prepare->execute();
         $result = $pdo_prepare->fetchAll();
     }
@@ -237,14 +237,21 @@ require 'unit/header_nav.php';
                                     <h6 class="l-through"><?php echo '$' . escape($value['price']); ?></h6>
                                 </div>
                                 <div class="prd-bottom">
-                                    <a href="" class="social-info">
-                                        <span><i class='bx bx-shopping-bag' ></i></span>
-                                        <p class="hover-text">add to bag</p>
-                                    </a>
-                                    <a href="product-detail.php?id=<?php echo escape($value['id']); ?>" class="social-info">
-                                        <span><i class='bx bx-move'></i></span>
-                                        <p class="hover-text">view more</p>
-                                    </a>
+                                    <form action="addtocart.php" method="POST" class="d-flex"> 
+                                        <input name="_token" type="hidden" value="<?php echo $_SESSION['csrf_token']; ?>">
+                                        <input type="hidden" name="product_id" value="<?php echo escape($value['id']); ?>">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <div class="social-info p-0">
+                                            <button type="submit" class="p-0" style="border:none;outline:none;background-color:transparent;">
+                                                <span><i class='bx bx-shopping-bag' ></i></span>
+                                                <p class="hover-text w-auto">add to bag</p>
+                                            </button>
+                                        </div>
+                                        <a href="product-detail.php?id=<?php echo escape($value['id']); ?>" class="social-info">
+                                            <span><i class='bx bx-move'></i></span>
+                                            <p class="hover-text">view more</p>
+                                        </a>
+                                    </form>
                                 </div>
                                 
                             </div>

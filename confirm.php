@@ -1,4 +1,16 @@
 <?php
+  session_start();
+  require 'unit/href.php';
+  require 'config/database.php';
+  require 'config/common.php';
+
+  if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in'])) {
+    # Select this user with SESSION['user_id']
+    $pdo_this_user = $pdo->prepare("SELECT * FROM users WHERE id=".$_SESSION['user_id']); 
+    $pdo_this_user->execute();
+    $loginUser = $pdo_this_user->fetch(PDO::FETCH_ASSOC);
+  }
+
   require 'unit/top.php';
   require 'unit/header_nav.php';
 ?>
@@ -30,6 +42,8 @@
 
 <section class="order_details section_gap">
 <div class="container">
+
+<?php if (isset($_SESSION['cart'])) { ?>
 <h3 class="title_confirmation">Thank you. Your order has been received.</h3>
 <div class="row order_d_inner">
 <div class="col-lg-4">
@@ -148,6 +162,13 @@
 </table>
 </div>
 </div>
+<?php } else { ?>
+  <div class="d-flex justify-content-center align-item-center gap-4">
+    <h3 class="title_confirmation mb-0 mt-3">Not item purchased, Please go to</h3>
+    <a href="index.php" class="primary-btn">Home Page</a>
+  </div>
+<?php } ?>
+
 </div>
 </section>
 

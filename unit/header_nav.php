@@ -1,6 +1,6 @@
 <?php
     $cart = 0;
-    if ($_SESSION['cart']) {
+    if (isset($_SESSION['cart'])) {
         foreach($_SESSION['cart'] as $key => $qty) {
             $cart += $qty;
         }
@@ -64,7 +64,7 @@
                         ?>
 
                         <?php
-                            if ($link == 'category.php') {
+                            if ($link == 'index.php') {
                         ?>
                         <li class="nav-item">
                             <button class="search">

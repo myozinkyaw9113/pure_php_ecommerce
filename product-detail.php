@@ -23,7 +23,6 @@
   }
   
   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $customer_id = $_SESSION['user_id'];
     $productId = $_POST['product_id'];
     $quantity = $_POST['quantity'];
 
@@ -36,33 +35,11 @@
     } else {
       if (empty($_SESSION['cart']['pid'.$productId])) {
         $qty = $_SESSION['cart']['pid'.$productId] = $quantity;
-        $totalprice = $qty * $sProduct['price'];
-        $sql = "INSERT INTO cart(customer_id,product_id,quantity,total_price) 
-        VALUE(:customer_id,:product_id,:quantity,:total_price)";
-        $pdo_prepare = $pdo->prepare($sql);
-        $result = $pdo_prepare->execute(
-          array (
-            ':customer_id' => $customer_id,
-            ':product_id' => $productId,
-            ':quantity' => $qty,
-            ':total_price' => $totalprice
-          )
-        );
-        if ($result) {
-          echo '<script>alert("Cart Item successfully inserted");window.location.href="index.php";</script>';
-        }
+        echo "<script>alert('This item added to the cart');window.location.href='product-detail.php?id=$productId'</script>";
       } else {
         $qty = $_SESSION['cart']['pid'.$productId] += $quantity;
-        $totalprice = $qty * $sProduct['price'];
-        $sql = "UPDATE cart SET quantity='$qty', total_price=$totalprice
-        WHERE customer_id=".$_SESSION['user_id'] . " AND product_id=".$productId;
-        $pdo_prepare = $pdo->prepare($sql);
-        $result = $pdo_prepare->execute();
-        if ($result) {
-          echo '<script>alert("Cart Item successfully updated");window.location.href="index.php";</script>';
-        }
+        echo "<script>alert('This item added puls to the cart');window.location.href='product-detail.php?id=$productId'</script>";
       }
-      header('Location: product-detail.php?id='.$productId);
     }
   }
 
