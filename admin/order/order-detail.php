@@ -95,15 +95,15 @@ require '../top.php';
           
             <div class="card-footer clearfix">
               <ul class="pagination pagination-sm m-0 float-right">
-                <li class="page-item"><a class="page-link" href="?p=1"><i class='bx bx-chevrons-left'></i></a></li>
+                <li class="page-item"><a class="page-link" href="?id=<?php echo $_GET['id'] ?>&p=1"><i class='bx bx-chevrons-left'></i></a></li>
                 <li class="page-item <?php if($p <= 1){ echo 'disabled'; } ?>">
-                  <a class="page-link" href="<?php if($p <= 1){ echo '#'; }else{ echo '?p='.($p-1); } ?>"><i class='bx bxs-chevron-left' ></i></a>
+                  <a class="page-link" href="<?php if($p <= 1){ echo '#'; }else{ echo '?id='.$_GET['id'].'&p='.($p-1); } ?>"><i class='bx bxs-chevron-left' ></i></a>
                 </li>
                 <li class="page-item"><a class="page-link" href="#">C</a></li>
                 <li class="page-item <?php if($p >= $total_pages){ echo 'disabled'; } ?>">
-                  <a class="page-link" href="<?php if($p >= $total_pages){ echo '#'; }else{ echo '?p='.($p+1); } ?>"><i class='bx bxs-chevron-right' ></i></a>
+                  <a class="page-link" href="<?php if($p >= $total_pages){ echo '#'; }else{ echo '?id='.$_GET['id'].'&p='.($p+1); } ?>"><i class='bx bxs-chevron-right' ></i></a>
                 </li>
-                <li class="page-item"><a class="page-link" href="?p=<?php echo $total_pages; ?>"><i class='bx bxs-chevrons-right' ></i></a></li>
+                <li class="page-item"><a class="page-link" href="?id=<?php echo $_GET['id'] ?>&p=<?php echo $total_pages; ?>"><i class='bx bxs-chevrons-right' ></i></a></li>
               </ul>
             </div>
           </div>

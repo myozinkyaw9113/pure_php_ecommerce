@@ -12,7 +12,7 @@
   } else {
     $p = 1;
   }
-  $showrecs = 10;
+  $showrecs = 1;
   $offset = ($p - 1) * $showrecs;
 
   $pdo_prepare = $pdo->prepare("SELECT * FROM orders ORDER BY id DESC");

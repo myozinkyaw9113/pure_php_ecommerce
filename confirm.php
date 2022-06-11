@@ -4,6 +4,10 @@
   require 'config/database.php';
   require 'config/common.php';
 
+  if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
+    header('Location: login.php');
+  }
+
   if (isset($_SESSION['user_id']) && isset($_SESSION['logged_in'])) {
     # Select this user with SESSION['user_id']
     $pdo_this_user = $pdo->prepare("SELECT * FROM users WHERE id=".$_SESSION['user_id']); 
@@ -43,7 +47,7 @@
 <section class="order_details section_gap">
 <div class="container">
 
-<?php if (isset($_SESSION['cart'])) { ?>
+<?php if (empty($_SESSION['cart'])) { ?>
 <h3 class="title_confirmation">Thank you. Your order has been received.</h3>
 <div class="row order_d_inner">
 <div class="col-lg-4">

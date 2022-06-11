@@ -28,6 +28,8 @@
   <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
   <!-- Theme style -->
   <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+  
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -45,7 +47,9 @@
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->
       <?php 
-        if ($link != 'orders.php' && $link != 'create.php' && $link != 'edit.php') {
+        if ($link != 'orders.php' && $link != 'create.php' && $link != 
+          'edit.php' && $link != 'weekly_report.php' && $link != 'monthly_report.php' 
+          && $link != 'best_seller.php' && $link != 'royal_customer.php') {
       ?>
       <li class="nav-item">
         <a class="nav-link" data-widget="navbar-search" href="#" role="button">
@@ -124,7 +128,7 @@
           </li>
           <li class="nav-item">
             <a href="category.php" class="nav-link <?php if ($link == 'category.php') { echo 'active'; } ?>">
-              <i class='bx bx-store-alt'></i>
+              <i class='bx bx-category' ></i>
               <p>
                 Category
               </p>
@@ -137,6 +141,41 @@
                 Orders
               </p>
             </a>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link">
+              <i class='bx bxs-report'></i>
+              <p>
+              Report
+              <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="weekly_report.php" class="nav-link <?php if ($link == 'weekly_report.php') { echo 'active bg-primary '; } ?>">
+                  <i class='bx bx-calendar-week nav-icon'></i>
+                  <p>Weekly Report</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="monthly_report.php" class="nav-link <?php if ($link == 'monthly_report.php') { echo 'active bg-primary '; } ?>">
+                  <i class='bx bx-calendar-week nav-icon'></i>
+                  <p>Monthly Report</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="royal_customer.php" class="nav-link <?php if ($link == 'royal_customer.php') { echo 'active bg-primary '; } ?>">
+                  <i class='bx bx-user-check nav-icon'></i>
+                  <p>Royal Customer</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="best_seller.php" class="nav-link <?php if ($link == 'best_seller.php') { echo 'active bg-primary '; } ?>">
+                  <i class='bx bx-cart-add nav-icon'></i>
+                  <p>Best Seller Item</p> 
+                </a>
+              </li>
+            </ul>
           </li>
         </ul>
       </nav>

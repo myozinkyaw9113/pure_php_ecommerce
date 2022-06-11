@@ -119,11 +119,9 @@ require 'unit/header_nav.php';
 
             <div class="col-first">
 
-                <h1>Shop Category page</h1>
+                <h1>Welcome <?php if (isset($_SESSION['user_id'])) { echo escape($loginUser['name']); } ?></h1>
                 <nav class="d-flex align-items-center">
-                    <a href="index.php">Home<span><i class='bx bx-right-arrow'></i></span></a>
-                    <a href="#">Shop<span><i class='bx bx-right-arrow'></i></span></a>
-                    <a href="category.php">Fashon Category</a>
+                    <a href="index.php">Home</a>
                 </nav>
 
             </div>

@@ -2,14 +2,17 @@
 session_start();
 require 'config/database.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
+  header('Location: login.php');
+} else {
+  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $productId = $_POST['product_id'];
     $quantity = $_POST['quantity'];
-
+  
     $selectProdcut = $pdo->prepare("SELECT * FROM products WHERE id=$productId");
     $selectProdcut->execute();
     $sProduct = $selectProdcut->fetch(PDO::FETCH_ASSOC);
-
+  
     if ($quantity > $sProduct['quantity']) {
       echo "<script>alert('Not enough item');window.location.href='index.php'</script>";
     } else {
@@ -22,5 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       }
     }
   }
+}
+
+
   
 ?>

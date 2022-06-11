@@ -21,7 +21,7 @@
   } else {
     $p = 1;
   }
-  $showrecs = 5;
+  $showrecs = 3;
   $offset = ($p - 1) * $showrecs;
 
   if (empty($_POST['search']) && empty($_COOKIE['search'])) {
